@@ -19,6 +19,48 @@ export const getMLBTeams = async () => {
         emoji: "⚾",
       }));
   };
+
+  export const getSoccerTeams = async () => {
+    const leagues = [
+      "esp.1", // La Liga
+      "eng.1", // Premier League
+      "ger.1", // Bundesliga
+      "ita.1", // Serie A
+      "fra.1", // Ligue 1
+    ];
+  
+    let allTeams = [];
+  
+    for (const league of leagues) {
+      const response = await fetch(
+        `/espn/apis/site/v2/sports/soccer/${league}/teams`
+      );
+  
+      const data = await response.json();
+  
+      if (
+        data.sports?.[0]?.leagues?.[0]?.teams
+      ) {
+        const teams =
+  data.sports[0].leagues[0].teams.map(
+    ({ team }) => ({
+      id: `SOCCER-${team.id}`,
+      name: team.displayName,
+      league: "SOCCER",
+      teamId: team.id,
+      leagueCode: league,
+      emoji: "⚽",
+    })
+  );
+  
+        allTeams = [...allTeams, ...teams];
+      }
+    }
+  
+    return allTeams.sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+  };
   
   export const getMLBSchedule = async (
     teamId,
@@ -121,6 +163,31 @@ export const getMLBTeams = async () => {
           "🤘",
           "CFB"
         );
+
+      case "SOCCER":
+        return await getSoccerTeams();
+      
+      case "F1":
+        return [
+            {
+              id: "F1",
+              name: "Formula 1",
+              league: "F1",
+              teamId: "f1",
+              emoji: "🏁",
+            },
+          ];
+        case "TENNIS":
+          return [
+              {
+                id: "TENNIS",
+                name: "Tennis Finals",
+                league: "TENNIS",
+                teamId: "tennis",
+                emoji: "🎾",
+              },
+            ];
+    
   
       default:
         return [];
@@ -131,6 +198,17 @@ export const getMLBTeams = async () => {
   // SCHEDULE FETCHER
   // ====================
   
+  export const getSoccerSchedule = async (
+    leagueCode,
+    teamId
+  ) => {
+    const response = await fetch(
+      `/espn/apis/site/v2/sports/soccer/${leagueCode}/teams/${teamId}/schedule`
+    );
+  
+    return await response.json();
+  };
+
   export const getScheduleByLeague = async (
     league,
     teamId
@@ -166,8 +244,16 @@ export const getMLBTeams = async () => {
           "college-football",
           teamId
         );
+      case "SOCCER":
+        return await getESPNSchedule(
+          "soccer",
+          "esp.1",
+          teamId
+        );
   
       default:
         return null;
     }
+
+    
   };
