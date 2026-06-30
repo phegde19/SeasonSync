@@ -1222,18 +1222,135 @@ Game ID: ${game.id}`,
     const today = new Date();
     const weekFromNow = new Date();
   
-    weekFromNow.setDate(today.getDate() + 7);
-  
+    weekFromNow.setDate(today.getDate() + 100);
     for (const team of selectedTeams) {
       try {
-        const data =
-          await getScheduleByLeague(
-            team.league,
-            team.teamId
-          );
-  
+    
+        //
+        // Tennis (hardcoded)
+        //
+        if (team.league === "TENNIS") {
+          console.log("INSIDE TENNIS");
+    
+          const finals = [
+            {
+              id: "WIM-2026",
+              name: "Wimbledon Men's Final",
+              date: "2026-07-12T14:00:00Z",
+              location: "Wimbledon, England",
+            },
+            {
+              id: "USO-2026",
+              name: "US Open Men's Final",
+              date: "2026-09-13T20:00:00Z",
+              location: "Flushing Meadows, USA",
+            },
+            {
+              id: "ATP-2026",
+              name: "ATP Finals Championship",
+              date: "2026-11-22T18:00:00Z",
+              location: "Turin, Italy",
+            },
+            {
+              id: "IW-2026",
+              name: "Indian Wells Final",
+              date: "2026-03-15T21:00:00Z",
+              location: "Indian Wells Tennis Garden",
+            },
+            {
+              id: "MIA-2026",
+              name: "Miami Open Final",
+              date: "2026-03-29T19:00:00Z",
+              location: "Miami",
+            },
+            {
+              id: "MON-2026",
+              name: "Monte Carlo Masters Final",
+              date: "2026-04-19T13:00:00Z",
+              location: "Monte Carlo",
+            },
+            {
+              id: "MAD-2026",
+              name: "Madrid Open Final",
+              date: "2026-05-03T16:30:00Z",
+              location: "Madrid",
+            },
+            {
+              id: "ROM-2026",
+              name: "Italian Open Final",
+              date: "2026-05-17T15:00:00Z",
+              location: "Rome",
+            },
+            {
+              id: "CAN-2026",
+              name: "Canadian Open Final",
+              date: "2026-08-09T20:00:00Z",
+              location: "Canada",
+            },
+            {
+              id: "CIN-2026",
+              name: "Cincinnati Open Final",
+              date: "2026-08-23T20:00:00Z",
+              location: "Cincinnati",
+            },
+            {
+              id: "SHA-2026",
+              name: "Shanghai Masters Final",
+              date: "2026-10-18T08:00:00Z",
+              location: "Shanghai",
+            },
+            {
+              id: "PAR-2026",
+              name: "Paris Masters Final",
+              date: "2026-11-08T14:00:00Z",
+              location: "Paris",
+            },
+            {
+              id: "AO-2027",
+              name: "Australian Open Men's Final",
+              date: "2027-01-31T08:30:00Z",
+              location: "Melbourne Park, Australia",
+            },
+            {
+              id: "FO-2027",
+              name: "French Open Men's Final",
+              date: "2027-06-13T13:00:00Z",
+              location: "Roland Garros, France",
+            },
+          ];
+    
+          finals.forEach((event) => {
+            const gameDate = new Date(event.date);
+    
+            if (gameDate < today || gameDate > weekFromNow) {
+              return;
+            }
+    
+            allGames.push({
+              id: event.id,
+              league: "TENNIS",
+              emoji: "🎾",
+              gameName: event.name,
+              gameDate,
+              venue: event.location,
+            });
+          });
+    
+          continue;
+        }
+    
+        //
+        // Everything else fetches data
+        //
+        const data = await getScheduleByLeague(
+          team.league,
+          team.teamId
+        );
+    
+        console.log(data);
+    
         if (!data) continue;
-  
+    
         //
         // MLB
         //
@@ -1265,11 +1382,37 @@ Game ID: ${game.id}`,
             });
           });
         }
-  
+
+    
+        //
+        // Formula 1
+        //
+        else if (team.league === "F1") {
+          data.MRData.RaceTable.Races.forEach((race) =>  {
+            const raceDate = new Date(`${race.date}T${race.time || "00:00:00Z"}`);
+        
+            if (raceDate < today || raceDate > weekFromNow) {
+              return;
+            }
+        
+            allGames.push({
+              id: race.round,
+              league: "F1",
+              emoji: "🏁",
+              gameName: race.raceName,
+              gameDate: raceDate,
+              venue: `${race.Circuit.circuitName}, ${race.Circuit.Location.locality}, ${race.Circuit.Location.country}`,
+            });
+
+          });
+        }
+    
         //
         // ESPN Sports
         //
         else {
+          console.log(team.league);
+console.log(data.events);
           data.events?.forEach((event) => {
             const gameDate = new Date(
               event.date
@@ -1279,28 +1422,34 @@ Game ID: ${game.id}`,
               gameDate < today ||
               gameDate > weekFromNow
             ) {
+              console.log(
+                team.league,
+                event.date,
+                new Date(event.date)
+              );
               return;
             }
   
             const competition =
               event.competitions?.[0];
-  
+
             const homeTeam =
               competition?.competitors?.find(
                 (c) => c.homeAway === "home"
               )?.team?.displayName;
-  
+
             const awayTeam =
               competition?.competitors?.find(
                 (c) => c.homeAway === "away"
               )?.team?.displayName;
-  
+
             allGames.push({
               id: event.id,
               league: team.league,
               emoji: team.emoji,
               awayTeam,
               homeTeam,
+              gameName: event.name,
               gameDate: event.date,
               venue:
                 competition?.venue?.fullName,
@@ -1338,7 +1487,7 @@ Game ID: ${game.id}`,
           ).toDateString() === todayString
       )
     );
-  
+    console.log("ALL GAMES:", uniqueGames);
     setWeekGames(uniqueGames);
   
     setLoadingGames(false);
@@ -1624,8 +1773,10 @@ Game ID: ${game.id}`,
         }}
       >
         <h3>
-          {game.emoji} {game.awayTeam} @ {game.homeTeam}
-        </h3>
+  {game.awayTeam && game.homeTeam
+    ? `${game.emoji} ${game.awayTeam} @ ${game.homeTeam}`
+    : `${game.emoji} ${game.gameName}`}
+</h3>
 
         <p>
           🕐{" "}
@@ -1668,7 +1819,9 @@ Game ID: ${game.id}`,
             fontWeight: "bold",
           }}
         >
-          {game.emoji} {game.awayTeam} @ {game.homeTeam}
+          {game.awayTeam && game.homeTeam
+    ? `${game.emoji} ${game.awayTeam} @ ${game.homeTeam}`
+    : `${game.emoji} ${game.gameName}`}
         </div>
 
         <div>{game.venue}</div>
