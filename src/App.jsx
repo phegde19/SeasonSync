@@ -1696,9 +1696,31 @@ console.log(data.events);
                 borderBottom: "1px solid #eee",
               }}
             >
-              <span>
-                {team.emoji} {team.name}
-              </span>
+              <div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+  }}
+>
+  {team.logo ? (
+    <img
+      src={team.logo}
+      alt={team.name}
+      style={{
+        width: "30px",
+        height: "30px",
+        objectFit: "contain",
+      }}
+    />
+  ) : (
+    <span style={{ fontSize: "22px" }}>
+      {team.emoji}
+    </span>
+  )}
+
+  <span>{team.name}</span>
+</div>
   
               <button
                 onClick={() => toggleTeam(team)}
@@ -1735,9 +1757,31 @@ console.log(data.events);
                   "1px solid #eee",
               }}
             >
-              <span>
-                {team.emoji} {team.name}
-              </span>
+              <div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+  }}
+>
+  {team.logo ? (
+    <img
+      src={team.logo}
+      alt={team.name}
+      style={{
+        width: "30px",
+        height: "30px",
+        objectFit: "contain",
+      }}
+    />
+  ) : (
+    <span style={{ fontSize: "22px" }}>
+      {team.emoji}
+    </span>
+  )}
+
+  <span>{team.name}</span>
+</div>
   
               <button
                 onClick={() =>

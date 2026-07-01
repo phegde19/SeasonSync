@@ -17,6 +17,7 @@ export const getMLBTeams = async () => {
         league: "MLB",
         teamId: team.id,
         emoji: "⚾",
+        logo: `https://www.mlbstatic.com/team-logos/${team.id}.svg`,
       }));
   };
 
@@ -50,6 +51,7 @@ export const getMLBTeams = async () => {
       teamId: team.id,
       leagueCode: league,
       emoji: "⚽",
+      logo: team.logos?.[0]?.href,
     })
   );
   
@@ -86,6 +88,7 @@ export const getMLBTeams = async () => {
     const response = await fetch(
         `/espn/apis/site/v2/sports/${sport}/${league}/teams?limit=500`
       );
+      console.log(data.sports[0].leagues[0].teams[0].team);
   
     const data = await response.json();
     console.log(data);
@@ -105,6 +108,7 @@ export const getMLBTeams = async () => {
         league: leagueCode,
         teamId: team.id,
         emoji,
+        logo: team.logos?.[0]?.href,
       }))
       .sort((a, b) => a.name.localeCompare(b.name));
   };
