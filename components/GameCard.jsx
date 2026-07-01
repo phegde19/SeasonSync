@@ -1,4 +1,4 @@
-function GameCard({ game }) {
+function GameCard({ game, onClick }) {
     const leagueColors = {
         MLB: "#0C2C56",
         NFL: "#013369",
@@ -12,7 +12,10 @@ function GameCard({ game }) {
 
     return (
         <div
+        onClick={onClick}
           style={{
+            cursor: "pointer",
+            transition: "0.2s",
             background: "#ffffff",
             borderRadius: "16px",
             padding: "16px",

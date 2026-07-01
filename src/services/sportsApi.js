@@ -88,7 +88,7 @@ export const getMLBTeams = async () => {
     const response = await fetch(
         `/espn/apis/site/v2/sports/${sport}/${league}/teams?limit=500`
       );
-      console.log(data.sports[0].leagues[0].teams[0].team);
+      
   
     const data = await response.json();
     console.log(data);

@@ -13,6 +13,7 @@ const [search, setSearch] = useState("");
 const [todayGames, setTodayGames] = useState([]);
 const [weekGames, setWeekGames] = useState([]);
 const [loadingGames, setLoadingGames] = useState(false);
+const [selectedGame, setSelectedGame] = useState(null);
 const [league, setLeague] = useState("MLB");
 const [availableTeams, setAvailableTeams] = useState([]); 
 useEffect(() => {
@@ -1812,6 +1813,7 @@ console.log(data.events);
   <GameCard
     key={game.id}
     game={game}
+    onClick={() => setSelectedGame(game)}
   />
 ))}
   </div>
@@ -1834,6 +1836,7 @@ console.log(data.events);
   <GameCard
     key={game.id}
     game={game}
+    onClick={() => setSelectedGame(game)}
   />
 ))}
   </div>
@@ -1854,6 +1857,56 @@ console.log(data.events);
       <button onClick={syncSelectedTeams}>
         Sync Selected Teams
       </button>
+      {selectedGame && (
+  <div
+    onClick={() => setSelectedGame(null)}
+    style={{
+      position: "fixed",
+      inset: 0,
+      background: "rgba(0,0,0,.6)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 999,
+    }}
+  >
+    <div
+      onClick={(e) => e.stopPropagation()}
+      style={{
+        background: "white",
+        borderRadius: "20px",
+        padding: "24px",
+        width: "90%",
+        maxWidth: "420px",
+      }}
+    >
+      <h2>
+        {selectedGame.awayTeam && selectedGame.homeTeam
+          ? `${selectedGame.awayTeam} @ ${selectedGame.homeTeam}`
+          : selectedGame.gameName}
+      </h2>
+
+      <p>
+        <strong>League:</strong> {selectedGame.league}
+      </p>
+
+      <p>
+        <strong>Date:</strong>{" "}
+        {new Date(selectedGame.gameDate).toLocaleString()}
+      </p>
+
+      <p>
+        <strong>Venue:</strong> {selectedGame.venue}
+      </p>
+
+      <button
+        onClick={() => setSelectedGame(null)}
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
     </div>
   );
 }
