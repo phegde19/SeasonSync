@@ -1,3 +1,4 @@
+import GameCard from "../components/GameCard";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useState, useEffect } from "react";
 import { getTeamsByLeague, getScheduleByLeague, getSoccerSchedule } from "./services/sportsApi";
@@ -1222,7 +1223,7 @@ Game ID: ${game.id}`,
     const today = new Date();
     const weekFromNow = new Date();
   
-    weekFromNow.setDate(today.getDate() + 100);
+    weekFromNow.setDate(today.getDate() + 7);
     for (const team of selectedTeams) {
       try {
     
@@ -1763,34 +1764,12 @@ console.log(data.events);
       gap: "1rem",
     }}
   >
-    {todayGames.map((game) => (
-      <div
-        key={game.id}
-        style={{
-          border: "1px solid #ddd",
-          borderRadius: "12px",
-          padding: "1rem",
-        }}
-      >
-        <h3>
-  {game.awayTeam && game.homeTeam
-    ? `${game.emoji} ${game.awayTeam} @ ${game.homeTeam}`
-    : `${game.emoji} ${game.gameName}`}
-</h3>
-
-        <p>
-          🕐{" "}
-          {new Date(
-            game.gameDate
-          ).toLocaleTimeString([], {
-            hour: "numeric",
-            minute: "2-digit",
-          })}
-        </p>
-
-        <p>📍 {game.venue}</p>
-      </div>
-    ))}
+   {todayGames.map((game) => (
+  <GameCard
+    key={game.id}
+    game={game}
+  />
+))}
   </div>
 )}
 <h2>This Week</h2>
@@ -1801,38 +1780,18 @@ console.log(data.events);
   <p>No upcoming games.</p>
 ) : (
   <div
-    style={{
-      border: "1px solid #ddd",
-      borderRadius: "8px",
-    }}
-  >
+  style={{
+    display: "flex",
+    flexDirection: "column",
+    gap: "1rem",
+  }}
+>
     {weekGames.map((game) => (
-      <div
-        key={game.id}
-        style={{
-          padding: "12px",
-          borderBottom: "1px solid #eee",
-        }}
-      >
-        <div
-          style={{
-            fontWeight: "bold",
-          }}
-        >
-          {game.awayTeam && game.homeTeam
-    ? `${game.emoji} ${game.awayTeam} @ ${game.homeTeam}`
-    : `${game.emoji} ${game.gameName}`}
-        </div>
-
-        <div>{game.venue}</div>
-
-        <div>
-          {new Date(
-            game.gameDate
-          ).toLocaleString()}
-        </div>
-      </div>
-    ))}
+  <GameCard
+    key={game.id}
+    game={game}
+  />
+))}
   </div>
 )}
   
